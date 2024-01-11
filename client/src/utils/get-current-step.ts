@@ -15,16 +15,14 @@ export const steps: Step = {
 };
 
 export const getCurrentStep = (chatHistory: Message[]): string => {
-  const lastAssistantMessage = chatHistory
-    .filter((msg) => msg.role === "assistant")
-    .pop()?.content;
-
-  if (!lastAssistantMessage || typeof lastAssistantMessage !== "string")
-    return "Tone";
-
+  console.log(chatHistory
+    .filter((msg) => msg.role === "assistant"), "chatHistory.filter((msg) => msg.role === assistant");
+ 
   // Find which step the last message corresponds to by checking if the step name appears at the start of the message
   for (const step in steps) {
-    if (lastAssistantMessage.startsWith(steps[step])) {
+    if (chatHistory[chatHistory.length-1].content.startsWith(steps[step])) {
+      console.log(steps[step]);
+      console.log(step);
       return steps[step]; // Returning the "current" step name as a string
     }
   }

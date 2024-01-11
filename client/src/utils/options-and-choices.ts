@@ -49,13 +49,17 @@ export const getUserChoice = (
 };
 
 export const toCamelCase = (str: string): string => {
+  const wordsInString = str.split(" ").length;
   return str
     .split(" ")
     .map((word, index) => {
-      if (index === 0) {
-        return word.toLowerCase();
+      if (index === 0 && wordsInString > 1) {
+        return word + " ";;
+      } if(index === 0 && wordsInString === 1){
+        return word;
       }
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      if(wordsInString === 3 && index === 2) return word + " ";
+      return word.trim();
     })
     .join("");
 };
@@ -67,12 +71,6 @@ export const fromCamelCase = (str: string): string => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 };
-
-// export const formatUserChoices = (choices: Record<string, string>): string => {
-//   return Object.entries(choices)
-//     .map(([step, choice]) => `• ${step}: ${choice}`)
-//     .join("\n");
-// };
 
 export const formatUserChoices = (choices: Record<string, string>): string => {
   return Object.entries(choices)
