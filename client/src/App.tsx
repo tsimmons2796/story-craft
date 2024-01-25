@@ -27,11 +27,13 @@ import { useChatHistory } from "./hooks/useChatHistory";
 //   }
 export default function App() {
   const [userPrompt, setUserPrompt] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
   const [userChoicesPerStep, setUserChoicesPerStep] =
     useState<Record<string, string>>();
 
-  const { chatHistory, setChatHistory, generateResponse } = useChatHistory();
+  const { chatHistory, setChatHistory, generateResponse } =
+    useChatHistory(setIsLoading);
 
   const [currentStep, setCurrentStep] = useState<string>(() =>
     getCurrentStep(chatHistory)
@@ -49,6 +51,7 @@ export default function App() {
       { role: "assistant", content: prompt },
     ]);
     setResponse(prompt);
+    setIsLoading(false);
     setHasStarted(true);
     setCurrentStep(
       getCurrentStep([...chatHistory, { role: "assistant", content: prompt }])
@@ -105,6 +108,7 @@ export default function App() {
     } else {
       setCurrentStep("Story");
     }
+    setIsLoading(false);
     setResponse(prompt);
     setUserPrompt("");
   };
@@ -190,6 +194,7 @@ export default function App() {
               variant="contained"
               color="primary"
               sx={{ mt: 3 }}
+              disabled={isLoading}
             >
               Generate response
             </Button>
@@ -200,7 +205,10 @@ export default function App() {
             variant="outlined"
             color="primary"
             sx={{ mt: 3 }}
-            onClick={startApplication}
+            onClick={() => {
+              setIsLoading(true);
+              startApplication();
+            }}
           >
             Start
           </Button>

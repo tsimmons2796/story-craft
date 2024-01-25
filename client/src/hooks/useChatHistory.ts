@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Message } from "../interfaces/message.interface";
 
-export const useChatHistory = () => {
+export const useChatHistory = (setIsLoading: (isLoading: boolean) => void) => {
   const [chatHistory, setChatHistory] = useState<Message[]>([
     {
       role: "system",
@@ -20,6 +20,7 @@ export const useChatHistory = () => {
     chatHistoryParam: Message[]
   ): Promise<string> => {
     try {
+      setIsLoading(true);
       const response = await fetch("http://localhost:3002/generate", {
         method: "POST",
         headers: {
