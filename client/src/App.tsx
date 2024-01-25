@@ -9,11 +9,11 @@ import {
 import { useChatHistory } from "./hooks/useChatHistory";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import {
+  selectChatHistory,
   selectIsLoading,
   selectResponse,
-  selectUserPrompt,
 } from "./redux/selectors";
-import { setChatHistory, setUserPrompt } from "./redux/slice";
+import { setFormattedUserChoice, setUserPrompt } from "./redux/slice";
 
 //  Example:{
 // Tone: "Suspenseful",
@@ -33,32 +33,27 @@ import { setChatHistory, setUserPrompt } from "./redux/slice";
 // timePeriod: "Ancient Mythological Era",
 //   }
 
-const startApplicationUserMessage =
-  "Provide me with 10 random and unique Tones for a story in a numbered list with a title at the top. Be very broad and unique with the suggestions. The title should be 'Story Tones' without any colons or symbols after it.";
-
 export default function App() {
   const isLoading = useAppSelector(selectIsLoading);
-  const userPrompt = useAppSelector(selectUserPrompt);
   const response = useAppSelector(selectResponse);
+  const chatHistory = useAppSelector(selectChatHistory);
   const dispatch = useAppDispatch();
-  const { chatHistory, handleGenerateResponse } = useChatHistory();
   const [userChoicesPerStep, setUserChoicesPerStep] =
     useState<Record<string, string>>();
+  const { handleGenerateResponse } = useChatHistory(userChoicesPerStep);
+  const [userInput, setUserInput] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<string>(() =>
     getCurrentStep(chatHistory)
   );
   const [hasStarted, setHasStarted] = useState<boolean>(false);
 
   const startApplication = async () => {
-    handleGenerateResponse(startApplicationUserMessage, chatHistory);
-    dispatch(setUserPrompt(startApplicationUserMessage));
+    handleGenerateResponse(chatHistory);
     setHasStarted(true);
   };
 
   const onSubmit = async (submitEvent: FormEvent) => {
     submitEvent.preventDefault();
-
-    console.log({ response });
 
     // Extract assistant options
     const assistantOptions = extractAssistantOptions(
@@ -66,10 +61,10 @@ export default function App() {
       getCurrentStep(chatHistory)
     );
 
-    // Get user choice
-    const userChoice = getUserChoice(userPrompt, assistantOptions);
+    // Get formatted user choice
+    const userChoice = getUserChoice(userInput, assistantOptions);
+    dispatch(setUserPrompt(userChoice));
 
-    // Update userChoicesPerStep with camelCased key if the current step contains spaces
     setUserChoicesPerStep((prevChoices) => ({
       ...prevChoices,
       [currentStep]: userChoice,
@@ -84,55 +79,31 @@ export default function App() {
       currentStepIndex < Object.values(steps).length - 1
     ) {
       nextStepKey = Object.values(steps)[currentStepIndex + 1];
-    } else {
-      // If current step is not found or is the last step, set it to "Tone" (restart)
-      nextStepKey = "Tone";
     }
 
-    let formattedChoice = `I choose ${userChoice} for ${currentStep}. Please remember that chose for future prompts. Provide 10 numbered options for ${nextStepKey} and provide the options based on all of the previous choices I have chosen in a numbered list with the title at the top as ${nextStepKey} without any symbols, characters, colons or anything else but the title in letters only.`;
+    let formattedChoice = "";
 
-    handleGenerateResponse(formattedChoice, chatHistory);
-  };
+    console.log({ currentStep, nextStepKey });
 
-  const submitFinalPrompt = async (finalPrompt: string) => {
-    console.log("submitting final prompt", finalPrompt);
-    handleGenerateResponse(finalPrompt, chatHistory);
-  };
-
-  useEffect(() => {
-    if (userChoicesPerStep) {
-      const allStepsFulfilled = Object.values(steps).every((step) =>
-        userChoicesPerStep.hasOwnProperty(step)
-      );
-
-      if (allStepsFulfilled) {
-        const userChoicesString = formatUserChoices(userChoicesPerStep);
-        const finalUserPrompt = `All steps are completed! I want the choices for each step that I have chosen to be used as the foundation of a story to be created. I want you to create a 1000 word minimum short story based off all the choices chosen per step.
+    if (nextStepKey === "Write Story" && userChoicesPerStep) {
+      const userChoicesString = formatUserChoices(userChoicesPerStep);
+      formattedChoice = `All steps are completed! I want the choices for each step that I have chosen to be used as the foundation of a story to be created. I want you to create a 1000 word minimum short story based off all the choices chosen per step.
       Here are the choices per step that were chosen for you to base the short story off of:\n\n${userChoicesString}\n\n
       I want the story to not explicitly include the choices word for word but be descriptive enough that all of the choices can be inferred and understood by the reader.`;
-
-        dispatch(
-          setChatHistory([
-            {
-              role: "system",
-              content: `You are an assistant that helps users craft high-level concepts and ideas for their stories. Focus on providing foundational concepts in the following areas: Tone and Complexity, Setting, Main Characters, Primary Conflict, Mood, Themes and Motifs, Point of View, and Time Period. Avoid spoilers, climaxes, or in-depth plot specifics. The user will specify the option you have provided by name or the number as you will always provide a numbered list of options for the user to choose from. Or the user can input their own response if none of the provided options are good enough for the user. You will not start until the user says the phrase 'Let's get crackin!' After all of the steps have has a choice been chosen for it, I want you to create a short story based off of all of the answer provided for each step. These answers will serve as the foundation of a story to be created. The story should not be reptitive, and must be a minimum of one thousand words and must be based off of the users choices per step.`,
-            },
-          ])
-        );
-        // Call the function to handle the final submission
-        submitFinalPrompt(finalUserPrompt);
-      }
+    } else {
+      formattedChoice = `I choose ${userChoice} for ${currentStep}. Please remember that chose for future prompts. Provide 10 numbered options for ${nextStepKey} and provide the options based on all of the previous choices I have chosen in a numbered list with the title at the top as ${nextStepKey} without any symbols, characters, colons or anything else but the title in letters only.`;
     }
-    console.log(userChoicesPerStep, "userChoicesPerStep");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userChoicesPerStep]);
+
+    console.log(formattedChoice);
+
+    dispatch(setFormattedUserChoice(formattedChoice));
+
+    handleGenerateResponse(chatHistory, formattedChoice);
+    setUserInput("");
+  };
 
   useEffect(() => {
-    if (currentStep !== "Time Period") {
-      setCurrentStep(getCurrentStep(chatHistory));
-    } else {
-      setCurrentStep("Story");
-    }
+    setCurrentStep(getCurrentStep(chatHistory));
     console.log({ chatHistory });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatHistory]);
@@ -151,12 +122,13 @@ export default function App() {
               margin="normal"
               fullWidth
               id="prompt-description"
-              label="Enter Prompt Here"
+              label={isLoading ? "Loading..." : `Enter Prompt Here`}
               name="prompt-description"
               autoFocus
-              value={userPrompt}
+              disabled={isLoading}
+              value={userInput}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setUserPrompt(e.target.value)
+                setUserInput(e.target.value)
               }
             />
             <Button
@@ -165,8 +137,7 @@ export default function App() {
               variant="contained"
               color="primary"
               sx={{ mt: 3 }}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               Generate response
             </Button>
           </>
@@ -176,8 +147,7 @@ export default function App() {
             variant="outlined"
             color="primary"
             sx={{ mt: 3 }}
-            onClick={startApplication}
-          >
+            onClick={startApplication}>
             Start
           </Button>
         )}

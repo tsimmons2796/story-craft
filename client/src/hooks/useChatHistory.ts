@@ -1,23 +1,50 @@
-import { generateResponse } from './../redux/actions';
-import { useState } from "react";
+import { generateResponse } from "./../redux/actions";
 import { Message } from "../interfaces/message.interface";
-import { useAppDispatch, useAppSelector } from '../hooks';
-import { selectChatHistory } from "../redux/selectors";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { selectFormattedUserChoice } from "../redux/selectors";
+import { setChatHistory } from "../redux/slice";
 
-export const useChatHistory = () => {
+export const useChatHistory = (
+  userChoicesPerStep: Record<string, string> | undefined
+) => {
   const dispatch = useAppDispatch();
-  const chatHistory = useAppSelector(selectChatHistory);
+  const formattedUserChoice = useAppSelector(selectFormattedUserChoice);
 
-  // This function updates the chat history with the new message
-  const handleGenerateResponse = ( userPromptParam: string,
-    chatHistoryParam: Message[]) => {
-      dispatch(generateResponse({ userPrompt: userPromptParam, chatHistory: chatHistoryParam}));
+  const handleGenerateResponse = (
+    chatHistoryParam: Message[],
+    userChoicePrompt?: string
+  ) => {
+    console.log(userChoicePrompt);
+    if (userChoicePrompt) {
+      dispatch(
+        setChatHistory([
+          ...chatHistoryParam,
+          { role: "user", content: userChoicePrompt },
+        ])
+      );
+      dispatch(
+        generateResponse({
+          userPrompt: userChoicePrompt,
+          chatHistory: chatHistoryParam,
+        })
+      );
+    } else {
+      dispatch(
+        setChatHistory([
+          ...chatHistoryParam,
+          { role: "user", content: formattedUserChoice },
+        ])
+      );
+      dispatch(
+        generateResponse({
+          userPrompt: formattedUserChoice,
+          chatHistory: chatHistoryParam,
+        })
+      );
     }
-
-  // This function makes an API call to generate a response based on the user prompt and chat history
+  };
 
   return {
-    chatHistory,
     handleGenerateResponse,
   };
 };

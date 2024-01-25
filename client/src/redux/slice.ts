@@ -1,6 +1,4 @@
-// storySlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "./store";
 import { generateResponse } from "./actions";
 import { Message } from "../interfaces/message.interface";
 
@@ -8,6 +6,7 @@ interface StoryState {
   isLoading: boolean;
   response: string;
   userPrompt: string;
+  formattedUserChoice: string;
   chatHistory: Message[];
   error: string | null;
 }
@@ -16,6 +15,7 @@ const initialState: StoryState = {
   isLoading: false,
   response: "",
   userPrompt: "",
+  formattedUserChoice: `Provide me with 10 random and unique Tones for a story in a numbered list with a title at the top. Be very broad and unique with the suggestions. The title should be 'Story Tones' without any colons or symbols after it.`,
   chatHistory: [
     {
       role: "system",
@@ -38,10 +38,13 @@ const storySlice = createSlice({
     setChatHistory: (state, action: PayloadAction<Message[]>) => {
       state.chatHistory = action.payload;
     },
+    setFormattedUserChoice: (state, action: PayloadAction<string>) => {
+      state.formattedUserChoice = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(generateResponse.pending, (state) => {
+      .addCase(generateResponse.pending, (state, action) => {
         state.error = null;
         state.isLoading = true;
       })
@@ -63,6 +66,11 @@ const storySlice = createSlice({
   },
 });
 
-export const { setChatHistory, setResponse, setUserPrompt } = storySlice.actions;
+export const {
+  setChatHistory,
+  setFormattedUserChoice,
+  setResponse,
+  setUserPrompt,
+} = storySlice.actions;
 
 export default storySlice;

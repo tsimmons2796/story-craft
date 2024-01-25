@@ -1,6 +1,5 @@
-// selectors.ts
-import { createSelector } from '@reduxjs/toolkit';
-import { RootState } from './store';
+import { createSelector } from "@reduxjs/toolkit";
+import { RootState } from "./store";
 
 const selectStoryState = (state: RootState) => state.story;
 
@@ -22,4 +21,9 @@ export const selectUserPrompt = createSelector(
 export const selectChatHistory = createSelector(
   [selectStoryState],
   (story) => story.chatHistory
+);
+
+export const selectFormattedUserChoice = createSelector(
+  [selectStoryState],
+  (story) => story.formattedUserChoice
 );
