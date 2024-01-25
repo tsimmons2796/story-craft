@@ -15,8 +15,8 @@ export const steps: Step = {
 };
 
 export const getCurrentStep = (chatHistory: Message[]): string => {
-  console.log(chatHistory
-    .filter((msg) => msg.role === "assistant"), "chatHistory.filter((msg) => msg.role === assistant");
+  // console.log(chatHistory
+  //   .filter((msg) => msg.role === "assistant"), "chatHistory.filter((msg) => msg.role === assistant");
  
   // Find which step the last message corresponds to by checking if the step name appears at the start of the message
   for (const step in steps) {
