@@ -47,16 +47,6 @@ export default function App() {
       startApplicationUserMessage,
       chatHistory
     );
-    console.log(chatHistory, "chat history before setting chat history");
-    // setChatHistory((prevHistory) => [
-    //   ...prevHistory,
-    //   { role: "user", content: startApplicationUserMessage },
-    //   { role: "assistant", content: prompt },
-    // ]);
-    console.log(
-      { role: "user", content: startApplicationUserMessage },
-      { role: "assistant", content: prompt }
-    );
     setResponse(prompt);
     setIsLoading(false);
     setHasStarted(true);
