@@ -10,10 +10,12 @@ import { useChatHistory } from "./hooks/useChatHistory";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import {
   selectChatHistory,
+  // selectFormattedUserChoice,
   selectIsLoading,
   selectResponse,
 } from "./redux/selectors";
 import { setFormattedUserChoice, setUserPrompt } from "./redux/slice";
+// import { useOpenAiStream } from "./api/useOpenAiStream";
 
 //  Example:{
 // Tone: "Suspenseful",
@@ -37,15 +39,18 @@ export default function App() {
   const isLoading = useAppSelector(selectIsLoading);
   const response = useAppSelector(selectResponse);
   const chatHistory = useAppSelector(selectChatHistory);
+  // const formattedUserChoice = useAppSelector(selectFormattedUserChoice);
   const dispatch = useAppDispatch();
   const [userChoicesPerStep, setUserChoicesPerStep] =
     useState<Record<string, string>>();
-  const { handleGenerateResponse } = useChatHistory(userChoicesPerStep);
+  const { handleGenerateResponse } = useChatHistory();
   const [userInput, setUserInput] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<string>(() =>
     getCurrentStep(chatHistory)
   );
   const [hasStarted, setHasStarted] = useState<boolean>(false);
+
+  // useOpenAiStream(formattedUserChoice, chatHistory);
 
   const startApplication = async () => {
     handleGenerateResponse(chatHistory);

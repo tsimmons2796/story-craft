@@ -13,15 +13,24 @@ app.use(cors({ origin: "*" }));
 app.use("/openai", openAiRoutes);
 
 app.post("/generate", async (req, res) => {
+  res.set({
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+
   const { userPromptDescription, existingChatHistory } = req.body;
   console.log(req.body, "req.body");
   try {
-    const responseFromApi = await generate(
+    const { response, reason } = await generate(
       userPromptDescription,
       existingChatHistory
     );
-    console.log(responseFromApi, "responseFromApi");
-    res.json({ responseFromApi });
+    console.log({ response, reason });
+    res.json({ response, reason });
+    // res.write(`data: ${JSON.stringify({ response, reason })}\n\n`);
+    // res.end();
+   
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

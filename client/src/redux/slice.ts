@@ -7,6 +7,7 @@ interface StoryState {
   response: string;
   userPrompt: string;
   formattedUserChoice: string;
+  finishReason: string;
   chatHistory: Message[];
   error: string | null;
 }
@@ -16,6 +17,7 @@ const initialState: StoryState = {
   response: "",
   userPrompt: "",
   formattedUserChoice: `Provide me with 10 random and unique Tones for a story in a numbered list with a title at the top. Be very broad and unique with the suggestions. The title should be 'Story Tones' without any colons or symbols after it.`,
+  finishReason: "",
   chatHistory: [
     {
       role: "system",
@@ -41,6 +43,9 @@ const storySlice = createSlice({
     setFormattedUserChoice: (state, action: PayloadAction<string>) => {
       state.formattedUserChoice = action.payload;
     },
+    addMessageToHistory: (state, action: PayloadAction<Message>) => {
+      state.chatHistory.push(action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -49,15 +54,17 @@ const storySlice = createSlice({
         state.isLoading = true;
       })
       .addCase(generateResponse.fulfilled, (state, action) => {
+        console.log({ action });
+        const { response, reason } = action.payload;
         state.isLoading = false;
-        state.response = action.payload;
+        state.response = response;
         state.chatHistory.push({
           role: "assistant",
-          content: action.payload,
+          content: response,
         });
         state.error = null;
         state.userPrompt = "";
-        state.response = action.payload;
+        state.finishReason = reason;
       })
       .addCase(generateResponse.rejected, (state, action) => {
         state.isLoading = false;

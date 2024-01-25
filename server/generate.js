@@ -1,9 +1,6 @@
 import openai from "./api.js";
 
 const generate = async (userPrompt, existingChatHistory = []) => {
-  // console.log(userPrompt, "userPrompt");
-  // console.log(existingChatHistory, "existingChatHistory");
-
   const formattedMessages = existingChatHistory.map((message) => ({
     role: message.role,
     content: message.content,
@@ -17,11 +14,13 @@ const generate = async (userPrompt, existingChatHistory = []) => {
   });
 
   const responseMessage = response.choices[0].message.content;
-  // console.log(responseMessage, "responseMessage");
+  const finishReason = response.choices[0].finish_reason;
 
-  return responseMessage;
+  return {
+    response: responseMessage,
+    reason: finishReason,
+  };
 };
 
 export default generate;
-
 

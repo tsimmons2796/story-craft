@@ -4,9 +4,7 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { selectFormattedUserChoice } from "../redux/selectors";
 import { setChatHistory } from "../redux/slice";
 
-export const useChatHistory = (
-  userChoicesPerStep: Record<string, string> | undefined
-) => {
+export const useChatHistory = () => {
   const dispatch = useAppDispatch();
   const formattedUserChoice = useAppSelector(selectFormattedUserChoice);
 

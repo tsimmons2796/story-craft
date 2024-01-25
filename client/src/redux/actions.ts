@@ -29,7 +29,8 @@ export const generateResponse = createAsyncThunk(
       }
 
       const data = await response.json();
-      return data.responseFromApi;
+      console.log({ data });
+      return data;
     } catch (error) {
       return rejectWithValue("There was an error generating the response.");
     }
