@@ -20,13 +20,14 @@ app.post("/generate", async (req, res) => {
   });
 
   const { userPromptDescription, existingChatHistory } = req.body;
-  console.log(req.body, "req.body");
+  // console.log(req.body, "req.body line 23");
   try {
     const { response, reason } = await generate(
       userPromptDescription,
       existingChatHistory
     );
-    console.log({ response, reason });
+    // console.log(response, 'response line 29');
+    // console.log(reason, 'reason line 30');
     res.json({ response, reason });
     // res.write(`data: ${JSON.stringify({ response, reason })}\n\n`);
     // res.end();

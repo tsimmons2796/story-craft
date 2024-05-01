@@ -9,8 +9,8 @@ const generate = async (userPrompt, existingChatHistory = []) => {
   formattedMessages.push({ role: "user", content: `${userPrompt}` });
 
   const response = await openai.chat.completions.create({
+    // model: "gpt-4-turbo",
     model: "gpt-3.5-turbo",
-    // model: "gpt-4",
     messages: formattedMessages,
   });
 

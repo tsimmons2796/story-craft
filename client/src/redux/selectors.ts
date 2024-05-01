@@ -27,3 +27,8 @@ export const selectFormattedUserChoice = createSelector(
   [selectStoryState],
   (story) => story.formattedUserChoice
 );
+
+export const selectFinishReason = createSelector(
+  [selectStoryState],
+  (story) => story.finishReason
+);
