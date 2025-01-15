@@ -12,7 +12,7 @@ export const useChatHistory = () => {
     chatHistoryParam: Message[],
     userChoicePrompt?: string
   ) => {
-    // console.log(userChoicePrompt);
+    console.log({ userChoicePrompt, chatHistoryParam, formattedUserChoice });
     if (userChoicePrompt) {
       dispatch(
         setChatHistory([

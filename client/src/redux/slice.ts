@@ -46,6 +46,9 @@ const storySlice = createSlice({
     addMessageToHistory: (state, action: PayloadAction<Message>) => {
       state.chatHistory.push(action.payload);
     },
+    updateResponse(state, action) {
+      state.response = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -55,7 +58,7 @@ const storySlice = createSlice({
       })
       .addCase(generateResponse.fulfilled, (state, action) => {
         console.log({ action });
-        const { response, reason } = action.payload;
+        const { response } = action.payload;
         state.isLoading = false;
         state.response = response;
         state.chatHistory.push({
@@ -64,11 +67,10 @@ const storySlice = createSlice({
         });
         state.error = null;
         state.userPrompt = "";
-        state.finishReason = reason;
       })
-      .addCase(generateResponse.rejected, (state, action) => {
+      .addCase(generateResponse.rejected, (state, action: any) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload;
       });
   },
 });
@@ -78,6 +80,7 @@ export const {
   setFormattedUserChoice,
   setResponse,
   setUserPrompt,
+  updateResponse,
 } = storySlice.actions;
 
 export default storySlice;

@@ -1,6 +1,6 @@
 // store.ts
-import { configureStore } from '@reduxjs/toolkit';
-import storySlice from './slice';
+import { configureStore } from "@reduxjs/toolkit";
+import storySlice from "./slice";
 
 export const store = configureStore({
   reducer: {

@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Message } from "../interfaces/message.interface";
+import { updateResponse } from "../redux/slice"; // Assuming this is where updateResponse exists
 
 interface GenerateResponseArgs {
   userPrompt: string;
@@ -10,27 +11,42 @@ export const generateResponse = createAsyncThunk(
   "story/generateResponse",
   async (
     { userPrompt, chatHistory }: GenerateResponseArgs,
-    { rejectWithValue }
+    { dispatch, rejectWithValue }
   ) => {
+    console.log({ userPrompt, chatHistory });
+
     try {
-      const response = await fetch("http://localhost:3002/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userPromptDescription: userPrompt,
-          existingChatHistory: chatHistory,
-        }),
+      const eventSource = new EventSource(
+        `http://localhost:3002/generate?userPromptDescription=${encodeURIComponent(
+          userPrompt
+        )}&existingChatHistory=${encodeURIComponent(
+          JSON.stringify(chatHistory)
+        )}`
+      );
+
+      return await new Promise<{ response: string }>((resolve, reject) => {
+        let response = "";
+
+        eventSource.onmessage = (event) => {
+          if (event.data.includes("[COMPLETE]")) {
+            eventSource.close();
+            resolve({ response });
+          } else if (event.data.includes("[STREAM_ENDED]")) {
+            dispatch(updateResponse("[STREAM_ENDED] Continue generating?"));
+          } else {
+            response += event.data;
+            dispatch(updateResponse(response));
+          }
+        };
+
+        eventSource.onerror = (event) => {
+          console.error("Stream error:", event);
+          eventSource.close();
+          reject(
+            rejectWithValue("There was an error generating the response.")
+          );
+        };
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log({ data });
-      return data;
     } catch (error) {
       return rejectWithValue("There was an error generating the response.");
     }

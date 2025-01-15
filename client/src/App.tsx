@@ -1,3 +1,4 @@
+import ReactMarkdown from "react-markdown";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { getCurrentStep, steps } from "./utils/get-current-step";
@@ -161,7 +162,7 @@ export default function App() {
       </Box>
 
       <Typography component="pre" variant="body1" sx={{ mt: 3 }}>
-        {response}
+        <ReactMarkdown>{response}</ReactMarkdown>
       </Typography>
     </Container>
   );
