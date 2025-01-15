@@ -68,6 +68,7 @@ export default function App() {
       response,
       getCurrentStep(chatHistory)
     );
+    console.log({ assistantOptions });
 
     // Get formatted user choice
     const userChoice = getUserChoice(userInput, assistantOptions);
@@ -109,6 +110,10 @@ export default function App() {
     handleGenerateResponse(chatHistory, formattedChoice);
     setUserInput("");
   };
+
+  useEffect(() => {
+    console.log({ response });
+  }, [response]);
 
   useEffect(() => {
     setCurrentStep(getCurrentStep(chatHistory));

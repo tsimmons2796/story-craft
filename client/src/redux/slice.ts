@@ -4,7 +4,8 @@ import { Message } from "../interfaces/message.interface";
 
 interface StoryState {
   isLoading: boolean;
-  response: string;
+  response: any;
+  // response: string;
   userPrompt: string;
   formattedUserChoice: string;
   finishReason: string;
@@ -47,7 +48,15 @@ const storySlice = createSlice({
       state.chatHistory.push(action.payload);
     },
     updateResponse(state, action) {
+      console.log({ action });
+
       state.response = action.payload;
+      // Create a key-value pair for each new response chunk
+      // const newKey = Object.keys(state.response).length + 1; // Incremental key based on the current object size
+      // state.response = {
+      //   ...state.response,
+      //   [newKey]: action.payload, // Add the new chunk with the incremental key
+      // };
     },
   },
   extraReducers: (builder) => {

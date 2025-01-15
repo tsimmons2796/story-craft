@@ -30,10 +30,11 @@ export const generateResponse = createAsyncThunk(
         eventSource.onmessage = (event) => {
           if (event.data.includes("[COMPLETE]")) {
             eventSource.close();
-            resolve({ response });
+            resolve({ response }); // Resolve the full response when the stream is complete
           } else if (event.data.includes("[STREAM_ENDED]")) {
             dispatch(updateResponse("[STREAM_ENDED] Continue generating?"));
           } else {
+            // Accumulate and dispatch partial responses
             response += event.data;
             dispatch(updateResponse(response));
           }

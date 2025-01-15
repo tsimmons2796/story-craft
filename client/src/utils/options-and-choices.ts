@@ -14,6 +14,7 @@ export const extractAssistantOptions = (
   );
 
   let match;
+  console.log({ message, currentStep });
 
   while ((match = optionsRegex.exec(message)) !== null) {
     options.push(match[1].trim()); // Grab the captured value
@@ -27,6 +28,7 @@ export const getUserChoice = (
   assistantOptions: AssistantOption[]
 ): string => {
   // Check if the user message is a number
+  console.log({ userMessage, assistantOptions });
   if (!isNaN(parseInt(userMessage))) {
     const choiceIndex = parseInt(userMessage) - 1; // Subtract 1 to offset the index
     // Check if the index exists in assistantOptions
@@ -54,11 +56,12 @@ export const toCamelCase = (str: string): string => {
     .split(" ")
     .map((word, index) => {
       if (index === 0 && wordsInString > 1) {
-        return word + " ";;
-      } if(index === 0 && wordsInString === 1){
+        return word + " ";
+      }
+      if (index === 0 && wordsInString === 1) {
         return word;
       }
-      if(wordsInString === 3 && index === 2) return word + " ";
+      if (wordsInString === 3 && index === 2) return word + " ";
       return word.trim();
     })
     .join("");
