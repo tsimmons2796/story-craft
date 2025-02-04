@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { generateResponse } from "./actions";
-import { Message } from "../interfaces/message.interface";
+import { Message } from "../interfaces/interfaces";
 
 interface StoryState {
   isLoading: boolean;
-  response: any;
+  response: string;
   // response: string;
   userPrompt: string;
   formattedUserChoice: string;

@@ -1,5 +1,4 @@
-import { Message } from "../interfaces/message.interface";
-import { Step } from "../interfaces/step.interface";
+import { Message, Step } from "../interfaces/interfaces";
 
 export const steps: Step = {
   1: "Tone",

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { Message } from "../interfaces/message.interface";
+import { Message } from "../interfaces/interfaces";
 import { updateResponse } from "../redux/slice"; // Assuming this is where updateResponse exists
 
 interface GenerateResponseArgs {
@@ -30,12 +30,18 @@ export const generateResponse = createAsyncThunk(
         eventSource.onmessage = (event) => {
           if (event.data.includes("[COMPLETE]")) {
             eventSource.close();
+            console.log({ context: "resolve response", response });
             resolve({ response }); // Resolve the full response when the stream is complete
           } else if (event.data.includes("[STREAM_ENDED]")) {
+            console.log({
+              context: "[STREAM_ENDED] Continue generating?",
+            });
             dispatch(updateResponse("[STREAM_ENDED] Continue generating?"));
           } else {
+            console.log(event.data, "event.data");
             // Accumulate and dispatch partial responses
             response += event.data;
+            console.log({ responseSoFar: response });
             dispatch(updateResponse(response));
           }
         };

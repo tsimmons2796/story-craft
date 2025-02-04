@@ -1,4 +1,4 @@
-import { AssistantOption } from "../interfaces/output-option.interface";
+import { AssistantOption } from "../interfaces/interfaces";
 
 export const extractAssistantOptions = (
   message: string,

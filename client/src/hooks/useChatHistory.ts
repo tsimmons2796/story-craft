@@ -1,5 +1,5 @@
 import { generateResponse } from "./../redux/actions";
-import { Message } from "../interfaces/message.interface";
+import { Message } from "../interfaces/interfaces";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { selectFormattedUserChoice } from "../redux/selectors";
 import { setChatHistory } from "../redux/slice";

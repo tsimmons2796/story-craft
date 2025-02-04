@@ -11,13 +11,12 @@ import { useChatHistory } from "./hooks/useChatHistory";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import {
   selectChatHistory,
-  selectFinishReason,
+  // selectFinishReason,
   // selectFormattedUserChoice,
   selectIsLoading,
   selectResponse,
 } from "./redux/selectors";
 import { setFormattedUserChoice, setUserPrompt } from "./redux/slice";
-// import { useOpenAiStream } from "./api/useOpenAiStream";
 
 //  Example:{
 // Tone: "Suspenseful",
@@ -40,7 +39,7 @@ import { setFormattedUserChoice, setUserPrompt } from "./redux/slice";
 export default function App() {
   const isLoading = useAppSelector(selectIsLoading);
   const response = useAppSelector(selectResponse);
-  const finishReason = useAppSelector(selectFinishReason);
+  // const finishReason = useAppSelector(selectFinishReason);
   const chatHistory = useAppSelector(selectChatHistory);
   // const formattedUserChoice = useAppSelector(selectFormattedUserChoice);
   const dispatch = useAppDispatch();
